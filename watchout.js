@@ -7,28 +7,67 @@ var setWidth = d3.scale.linear().domain([0,1]).range([0,600]);
 var setHeight = d3.scale.linear().domain([0,1]).range([0,600]); 
 var step = 1000;
 
-var enemyAttr = {};
-enemyAttr.x = 50; 
-enemyAttr.y = 40; 
-enemyAttr.class = "enemy";
-enemyAttr.width = function(d, i) {
-  return 2*(i * 10 + 10);
-};
-enemyAttr.height = function(d, i) {
-  return 2*(i * 10 + 10);
+var dragPlayer = d3.behavior.drag().on("drag", function(d){
+  var curX = d3.selectAll("#player").attr("x"); 
+  var x = d3.event.x ; 
+  var y = d3.event.y ;
+  console.log(x  + " | " + d3.selectAll("#player").attr("x")); 
+  console.log(d3.select(this));
+  d3.select(this).attr("cx" , x ); 
+  d3.select(this).attr("cy" , y ); 
+});
+
+  //store current x and y in Data on dragStart
+  //
+/*
+var dragPlayer = d3.behavior.drag().on("drag", dragMove);
+var dragMove = function() {
+    //parent x = event x
+    //same for y
+    console.log("Clicking");
+    d3.select(this).parentNode.attr("x", d3.event.x);
+    d3.select(this).parentNode.attr("y", d3.eve W
+
+  */
+
+/*
+  var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on("dragstart", dragstarted)
+    .on("drag", dragged)
+    .on("dragend", dragended)
+
+   function dragged(d) {
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+}
+*/
+
+var enemyAttr = {
+  x : 50,
+  y : 40,
+  class : "enemy",
+  width : function(d, i) {
+    return 2*(i * 10 + 10);
+  },
+  height :  function(d, i) {
+    return 2*(i * 10 + 10);
+  }
 };
 
+
 var playerSize = 25;
-var playerAttr = {}; 
-playerAttr.id = "player";
-playerAttr.x = 50; 
-playerAttr.y = 50; 
-playerAttr.width = playerSize; 
-playerAttr.height = playerSize; 
+var playerAttr = {
+  id : "player",
+  x : 50,
+  y : 50,
+  width : playerSize,
+  height : playerSize
+}; 
+ 
 
 //create update function()
 var enemyUpdate = function(data) {
-  var enemies = container.selectAll("svg.enemies")
+  var enemies = container.selectAll(".enemy")
     .data(data);
 
 //update -- currently nothingu
@@ -56,16 +95,16 @@ var enemyUpdate = function(data) {
 };
 
 var playerUpdate = function(data){
-  var player = container.select("svg")
+  var player = container.selectAll("#player")
     .data(data);
 
-  player.enter().append("svg")
-    .attr(playerAttr)
-    .append("circle")
+  player.enter().append("circle")
+      .attr("id", "player")
       .attr("cy", playerSize/2)
       .attr("cx", playerSize/2)
       .attr("r", playerSize/4)
-      .attr("fill", "black"); 
+      .attr("fill", "black")
+      .call(dragPlayer); 
 };
 
 
@@ -74,7 +113,7 @@ var playerUpdate = function(data){
 
 setInterval(function() {
   enemyUpdate(["red", "black", "yellow", "blue", "green"]);
-  playerUpdate(1); 
+  playerUpdate([1]); 
 }, step);
 
 
